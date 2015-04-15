@@ -5,14 +5,14 @@
 
 ###### DO NOT EDIT PASS THIS LINE ######
 
-LAST_MODIFIED_DATE=2013_01_11
-VERSION=0
+LAST_MODIFIED_DATE=2015_04_04
+VERSION=1
 VERSION_STRING=${LAST_MODIFIED_DATE}_${VERSION}
 
 printUsage() {
     echo "###############################################################################"
     echo "#"
-    echo "# ghettoVCB-restore for ESX/ESXi 3.5, 4.x and 5.x"
+    echo "# ghettoVCB-restore for ESX/ESXi 3.5, 4.x, 5.x & 6.x"
     echo "# Author: William Lam"
     echo "# http://www.virtuallyghetto.com/"
     echo "# Documentation: http://communities.vmware.com/docs/DOC-8760"
@@ -93,10 +93,11 @@ sanityCheck() {
     ESX_VERSION=$(vmware -v | awk '{print $3}')
 
     case "${ESX_VERSION}" in
-        5.0.0|5.1.0)    VER=5; break;;
-        4.0.0|4.1.0)    VER=4; break;;
-        3.5.0|3i)       VER=3; break;;
-        *)              echo "You're not running ESX(i) 3.5, 4.x, 5.x!"; exit 1; break;;
+        6.0.0)                VER=6; break;;
+        5.0.0|5.1.0|5.5.0)    VER=5; break;;
+        4.0.0|4.1.0)          VER=4; break;;
+        3.5.0|3i)             VER=3; break;;
+        *)              echo "You're not running ESX(i) 3.5, 4.x, 5.x & 6.x!"; exit 1; break;;
     esac
 
     TAR="tar"
@@ -319,7 +320,7 @@ if [ ! "${IS_TGZ}" == "1" ]; then
                     ADAPTER_FORMAT=$(grep -i "ddb.adapterType" "${SOURCE_VMDK}" | awk -F "=" '{print $2}' | sed -e 's/^[[:blank:]]*//;s/[[:blank:]]*$//;s/"//g')
 
                     if [ ${RESTORE_DISK_FORMAT} -eq 1 ]; then
-                        if [[ "${VER}" == "4" ]] || [[ "${VER}" == "5" ]]; then
+                        if [[ "${VER}" == "4" ]] || [[ "${VER}" == "5" ]] || [[ "${VER}" == "6" ]] ; then
                             ${VMKFSTOOLS_CMD} -i "${SOURCE_VMDK}" -a "${ADAPTER_FORMAT}" -d zeroedthick "${DESTINATION_VMDK}" 2>&1 | tee "${REDIRECT}"
                         else
                             ${VMKFSTOOLS_CMD} -i "${SOURCE_VMDK}" -a "${ADAPTER_FORMAT}" "${DESTINATION_VMDK}" 2>&1 | tee "${REDIRECT}"
@@ -332,7 +333,7 @@ if [ ! "${IS_TGZ}" == "1" ]; then
                         ${VMKFSTOOLS_CMD} -i "${SOURCE_VMDK}" -a "${ADAPTER_FORMAT}" -d thin "${DESTINATION_VMDK}" 2>&1 | tee "${REDIRECT}"
 
                     elif [ ${RESTORE_DISK_FORMAT} -eq 4 ]; then
-                        if [[ "${VER}" == "4" ]] || [[ "${VER}" == "5" ]]; then
+                        if [[ "${VER}" == "4" ]] || [[ "${VER}" == "5" ]] || [[ "${VER}" == "6" ]] ; then
                             ${VMKFSTOOLS_CMD} -i "${SOURCE_VMDK}" -a "${ADAPTER_FORMAT}" -d eagerzeroedthick "${DESTINATION_VMDK}" 2>&1 | tee "${REDIRECT}"
                         else
                             ${VMKFSTOOLS_CMD} -i "${SOURCE_VMDK}" -a "${ADAPTER_FORMAT}" "${DESTINATION_VMDK}" 2>&1 | tee "${REDIRECT}"
